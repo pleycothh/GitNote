@@ -1,5 +1,5 @@
 // preload.js
-
+const path = require('path')
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 window.addEventListener('DOMContentLoaded', () => {
@@ -12,3 +12,5 @@ window.addEventListener('DOMContentLoaded', () => {
     replaceText(`${dependency}-version`, process.versions[dependency])
   }
 })
+
+console.log(path.join(__dirname, 'preload.js'))
