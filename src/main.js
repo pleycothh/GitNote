@@ -14,6 +14,12 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
     },
   })
+
+  // Quit app when closed
+  mainWindow.on('closed', function () {
+    app.quit()
+  })
+
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'index.html'))
 
@@ -45,8 +51,8 @@ app.on('window-all-closed', () => {
 // handel create add window
 function createAddWindow() {
   const addWindow = new BrowserWindow({
-    width: 200,
-    height: 300,
+    width: 300,
+    height: 200,
     title: 'Add Item',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -65,6 +71,18 @@ const mainMenuTemplate = [
   {
     label: 'File',
     submenu: [
+      {
+        label: 'Open Developing Tool',
+        click() {
+          new BrowserWindow.fromWebContents.openDevTools()
+        },
+      },
+      {
+        role: 'togglefullscreen',
+      },
+      {
+        type: 'separator',
+      },
       {
         label: 'Add Item',
         click() {
