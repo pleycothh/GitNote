@@ -16,7 +16,6 @@
 
     <div>
       <button class="btn waves-effect waves-light" id="selectBtn">Open File with main</button>
-      <button class="btn waves-effect waves-light" id="selectBtn2">Open File local</button>
 
     </div>
     
@@ -36,10 +35,7 @@
       document.querySelector('#selectBtn').addEventListener('click', function (event) {
         console.log("click button");
 
-        ipcRenderer.send('open-file',{
-          title: 'Title',
-          defaultPath:'defaultPath'
-          });
+        ipcRenderer.send('open-file');
       });
 
      
