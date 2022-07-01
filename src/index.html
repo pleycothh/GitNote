@@ -4,10 +4,14 @@
 <html>
   <head>
     <title>Hello World!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
   </head>
   <body>
-
-    <h1> Note List </h1>
+    <nav>
+      <div class="mav-wraper"></div>
+      <a class="brand-logo center"> Note List</a>
+    </nav>
     <ul></ul>
 
     
@@ -20,7 +24,9 @@
 
       // catch Add item
       ipcRenderer.on('item:add', function(e, item) {
+        ul.className = "collection";
         const li = document.createElement('li');
+        li.className = 'collection-item';
         const itemText = document.createTextNode(item);
         li.appendChild(itemText);
         ul.appendChild(li);
@@ -29,6 +35,7 @@
       // catch clear item
       ipcRenderer.on('item:clear', function() {
         ul.innerHTML = '';
+        ul.className = '';
       })
 
       // remvoe item with double click
@@ -36,6 +43,10 @@
 
       function removeItem(e){
         e.target.remove(); // any li inside the ul we click remove
+
+        if(ul.children.length == 0){
+          ul.className = '';
+        }
       }
 
     </script>
