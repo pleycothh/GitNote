@@ -7,14 +7,30 @@
     <title>Add Window</title>
 </head>
 <body>
+    <form>
+        <div>
+            <label> Enter Item</label>
+            <input type="text" id="item" autofocus/>
+        </div>
+        <button type="submit"> add Item</button>
+    </form>
 
-    <h1> Add window </h1>
+    <script>
+        const electron = require('electron')
+        const { ipcRenderer } = electron // <- send item to main.js
+        
+        // catch the item
+        const form = document.querySelector('form')
+        console.log(form)
+        form.addEventListener('submit', submitForm)
 
-    <div>
-        <label> Enter Item</label>
-        <input type="text" id="item" autofocus/>
-    </div>
-    <button type="submit"> add Item</button>
-    
+        function submitForm(e) {
+        e.preventDefault();
+        const item = document.querySelector('#item').value;
+
+        ipcRenderer.send('item:add', item);
+        }
+
+    </script>
 </body>
 </html>

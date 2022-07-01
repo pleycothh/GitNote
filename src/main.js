@@ -1,27 +1,30 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu } = require('electron')
+const { app, BrowserWindow, Menu, ipcMain } = require('electron')
 const path = require('path')
 const url = require('url')
 
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
+    // global varibale with no pre fix
     width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true, // <- fix the error: require is not defined
+      contextIsolation: false,
     },
   })
+
+  // and load the index.html of the app.
+  mainWindow.loadFile(path.join(__dirname, 'index.html'))
 
   // Quit app when closed
   mainWindow.on('closed', function () {
     app.quit()
   })
-
-  // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'index.html'))
 
   // Build menu from template
   const mainMenu = Menu.buildFromTemplate(mainMenuTemplate)
@@ -37,7 +40,7 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 
 // save as: app.on('ready', function () {})
-app.whenReady().then(() => {
+app.on('ready', function () {
   createWindow()
 })
 
@@ -50,17 +53,32 @@ app.on('window-all-closed', () => {
 
 // handel create add window
 function createAddWindow() {
-  const addWindow = new BrowserWindow({
+  addWindow = new BrowserWindow({
     width: 300,
     height: 200,
     title: 'Add Item',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true, // <- fix the error: require is not defined
+      contextIsolation: false,
     },
   })
   // and load the index.html of the app.
   addWindow.loadFile(path.join(__dirname, 'addWindow.html'))
+
+  // Garbage collection
+  addWindow.on('close', function () {
+    addWindow = null
+  })
 }
+
+// ------------------------------- Catch item:add ---------------------
+ipcMain.on('item:add', function (e, item) {
+  // catch from html with ipcMain at main.js
+  console.log(item)
+  mainWindow.webContents.send('item:add', item) // send from js to html
+  addWindow.close()
+})
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
@@ -73,8 +91,8 @@ const mainMenuTemplate = [
     submenu: [
       {
         label: 'Open Developing Tool',
-        click() {
-          new BrowserWindow.fromWebContents.openDevTools()
+        click(item, mainWindow) {
+          mainWindow.toggleDevTools()
         },
       },
       {
@@ -91,6 +109,9 @@ const mainMenuTemplate = [
       },
       {
         label: 'Clear Items',
+        click() {
+          mainWindow.webContents.send('item:clear')
+        },
       },
       {
         label: 'Quit',
@@ -102,3 +123,27 @@ const mainMenuTemplate = [
     ],
   },
 ]
+
+// If mac, add empty
+if (process.platform == 'darwin') {
+  mainMenuTemplate.unshift({}) // <-- add at begainng of array
+}
+
+// Add developer tools item if not in production
+if (process.env.NODE_ENV != 'production') {
+  mainMenuTemplate.push({
+    label: 'Developer Tools',
+    submenu: [
+      {
+        label: 'Toggle DevTools',
+        accelerator: process.platform == 'darwin' ? 'Command+I' : 'Ctrl+D',
+        click(item, focusedWindow) {
+          focusedWindow.toggleDevTools()
+        },
+      },
+      {
+        role: 'reload',
+      },
+    ],
+  })
+}

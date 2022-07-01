@@ -19,7 +19,8 @@
     "electron": "^19.0.5"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "vanillajs": "^1.0.1"
   },
   "config": {
     "forge": {
