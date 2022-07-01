@@ -3,7 +3,10 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu, ipcMain } = require('electron')
 const path = require('path')
+const { electron } = require('process')
 const url = require('url')
+//const {dialog} = require('electron').remote;
+const { dialog } = require('electron')
 
 // set env
 //process.env.NODE_ENV = 'production'
@@ -82,6 +85,17 @@ ipcMain.on('item:add', function (e, item) {
   mainWindow.webContents.send('item:add', item) // send from js to html
   addWindow.close()
 })
+
+// ---------------------------------- open file -------------------------
+ipcMain.on('open-file',(event,data)=>{
+
+  console.log("open file")
+  var tempPath = dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] });
+  console.log(tempPath);
+  /*dialog.showOpenDialog(null, data).then(filePaths => {
+      event.sender.send('open-file-paths', filePaths);
+  });*/
+});
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
